@@ -1,0 +1,12 @@
+{
+    "dest": {
+        "hostname": "localhost",
+        "port": 1701
+    },
+    "src": {
+        "hostname": "localhost",
+        "port": 1702
+    },
+    "timeout": 2,
+    "level": "debug"
+}

@@ -1,0 +1,2 @@
+import mote
+mote.main()
