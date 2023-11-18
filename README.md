@@ -1,7 +1,7 @@
 lorawan_note_send
 =================
 
-* [lorawan_note_send](#lorawan_note_send)
+* [Introduction](#Introduction)
    * [Setup](#setup)
       * [Working configuration](#working-configuration)
       * [config](#config)
