@@ -22,12 +22,12 @@ Modify device infomation in config/device.json. An example:
 ```
 {
     "Device": {
-        "JoinEUI": "0000000000000000",
-        "DevEUI": "0000000000000000"
+        "JoinEUI": "0000000000000001",
+        "DevEUI": "bfd2718a2904e6a8"
     },
     "RootKeys": {
-        "AppKey": "00000000000000000000000000000000",
-        "NwkKey": "00000000000000000000000000000000"
+        "AppKey": "5871FE1C02D1A74B6684D2D9FF54CEDA",
+        "NwkKey": "14714AAFF51F7792D8C4CCB614D08396"
     }
 }
 ```
