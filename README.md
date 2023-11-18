@@ -2,8 +2,6 @@
 
 This project mainly simulates a gateway and devices in a LoRaWAN network communication environment, with ChirpStack serving as the network server. A local UDP client is used to handle communication with the ChirpStack network.
 
-[toc]
-
 ## Setup
 ### Working configuration
 Ubuntu 20.04 LTS
