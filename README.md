@@ -1,34 +1,73 @@
 # lorawan_note_send
 
-This project mainly simulates a gateway and devices in a LoRaWAN network communication environment, with ChirpStack serving as the network server. A local UDP client is used to handle communication with the ChirpStack network. The general workflow is as follows:
+This project mainly simulates a gateway and devices in a LoRaWAN network communication environment, with ChirpStack serving as the network server. A local UDP client is used to handle communication with the ChirpStack network.
 
-[1]First, register a gateway and a device in ChirpStack, but both are inactive.
+## Setup
+### Working configuration
+Ubuntu 20.04 LTS
+Python 3.8
 
-[2]Use a local UDP client to send PULL_DATA messages to activate the gateway on ChirpStack.
+### config
+/config
 
-[3]After activation, use the same local client to send a JOIN-REQUEST message to the gateway. When the gateway receives it, ChirpStack will activate the registered device, allowing it to receive messages.
++ config.json: Basic configurations.
++ gateway.json: Gateway EUI.
++ device.json: Device parameters for OTAA mode.
 
-[4]Send data packets to the device through the local UDP client.
+<strong>（These have to be the same as the information related to the devices registered inside ChirpStack）</strong>
 
-[5]You can observe the device receiving data packets on the ChirpStack interface.
+OTAA
+Modify device infomation in config/device.json. An example:
 
-## pull_data
+```
+{
+    "Device": {
+        "JoinEUI": "0000000000000000",
+        "DevEUI": "0000000000000000"
+    },
+    "RootKeys": {
+        "AppKey": "00000000000000000000000000000000",
+        "NwkKey": "00000000000000000000000000000000"
+    }
+}
+```
+
+Gateway
+
+Modify Gateway infomation in config/gateway.json. An example:
+
+```
+{"GatewayEUI": "4e7b2799b9bfd427"}
+```
+
+## Steps
+
+The general workflow is as follows:
+
+1. Send a PULL_DATA to ChirpStack server by <strong>python main.py pull</strong>.
+2. Send a join request message to ChirpStack server by <strong>python main.py join</strong>.
+3. If the join accept message is decoded successfully, we can send an uplink message.
+4. An Uplink message can be sent by <strong>python main.py app -m xxxxx</strong>.
+
+### 1. Pull_data
 python main.py pull
 
 
 ![1](images/1.png)
 
-## join_request
+### 2. Join_request
 python main.py join -n / python main.py join
 
 
 ![2](images/2.png)
 
-## send_data
+### 3. Send_data
 python main.py app test
 
 
 ![3](images/3.png)
+
+### 4. Results
 
 ![4](images/4.png)
 
