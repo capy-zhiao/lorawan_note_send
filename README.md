@@ -103,6 +103,3 @@ python main.py fuzz testdata
 ![8](images/8.png)
 
 Results: Fuzzed_results.csv
-
-![9](images/9.png)
-
