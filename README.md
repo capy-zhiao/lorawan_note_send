@@ -1,7 +1,8 @@
 lorawan_note_send
 =================
 
-* [Introduction](#Introduction)
+* [lorawan_note_send](#lorawan_note_send)
+* [Introduction](#introduction)
    * [Setup](#setup)
       * [Working configuration](#working-configuration)
       * [config](#config)
@@ -10,6 +11,8 @@ lorawan_note_send
       * [2. Join_request](#2-join_request)
       * [3. Send_data](#3-send_data)
       * [4. Results](#4-results)
+      * [5. Fuzzingtest](#5-fuzzingtest)
+
 
 
 # Introduction
@@ -90,3 +93,16 @@ python main.py app test
 ![6](images/6.png)
 
 ![7](images/7.png)
+
+### 5. Fuzzingtest
+
+Currently, only the mutation construction of data sent to the Device has been implemented.
+
+python main.py fuzz testdata
+
+![8](images/8.png)
+
+Results: Fuzzed_results.csv
+
+![9](images/9.png)
+
