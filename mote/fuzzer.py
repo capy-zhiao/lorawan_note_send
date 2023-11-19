@@ -24,7 +24,7 @@ def get_string(base_string):
     """
     mutated_string = list(base_string)
     for i in range(len(mutated_string)):
-        if random.random() < 0.5:  # 50%的概率变异每个字符
+        if random.random() < 0.5:  
             mutated_string[i] = random.choice(string.ascii_letters + string.digits + string.punctuation)
     return ''.join(mutated_string)
 
