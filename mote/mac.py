@@ -1,3 +1,5 @@
+import csv
+
 import pdb
 import base64
 import json
@@ -210,18 +212,21 @@ class Gateway:
             payload,
         ])
 
-    def push(self, transmitter, data, mote):
+    def push(self, transmitter, data, mote, result):
         transmitter.send(self.form_pshdat(data, mote))
         pushack = transmitter.recv()
+        
         self.parse_pushack(pushack[0])
         try:
             pullresp = transmitter.recv()
+            result['ACK'] = True
         except socket.timeout as e:
             logger.info(
                 ('No response is received from remote servers')
             )
         else:
-            self.parse_pullresp(pullresp[0], mote)
+            self.parse_pullresp(pullresp[0], mote, result)
+            result['RESP'] = True
 
     def parse_pushack(self, pushack):
         """
@@ -248,7 +253,7 @@ class Gateway:
                     identifier.hex(),
                 ))
 
-    def parse_pullresp(self, pullresp, mote):
+    def parse_pullresp(self, pullresp, mote, result):
         """
         ---------------------------------------------------------------
         | Protocol Version | PULL RESP Token | Identifier |  Payload  |
@@ -273,9 +278,9 @@ class Gateway:
                     token.hex(),
                     identifier.hex(),
                 ))
-        self.parse_txpk(txpk, mote)
+        self.parse_txpk(txpk, mote, result)
 
-    def parse_txpk(self, txpk, mote):
+    def parse_txpk(self, txpk, mote, result):
         """
         ------------------------------
         |       Required Fields      |
@@ -310,7 +315,7 @@ class Gateway:
         ------------------------------
         """
         phypld = memoryview(base64.b64decode(txpk.get('data')))
-        mote.parse_phypld(phypld)
+        mote.parse_phypld(phypld, result)
         
 
 class Mote:
@@ -920,7 +925,7 @@ class Mote:
         offset = (7, 4, 0)
         return self.parse_byte(dlsettings, name=name, bitlength=bitlength, offset=offset)
 
-    def parse_phypld(self, phypld):
+    def parse_phypld(self, phypld, result):
         """
         Message Type:
         -------------------------------
@@ -951,9 +956,9 @@ class Mote:
         else: 
             macpld = phypld[MHDR_LEN:-MIC_LEN]
             mic = phypld[-MIC_LEN:]
-            self.parse_macpld(mtype, mhdr, macpld, mic)
+            self.parse_macpld(mtype, mhdr, macpld, mic, result)
 
-    def parse_macpld(self, mtype, mhdr, macpld, mic):
+    def parse_macpld(self, mtype, mhdr, macpld, mic, result):
         """
         -----------------------------------------
         | MHDR |    FHDR   | FPort | FRMPayload |
@@ -1015,6 +1020,8 @@ class Mote:
                         fport,
                         frmpld,
                     ))
+            result['MACPayload'] = message_type
+            result['DevAddr'] = fhdr_d.get("devaddr").hex()[::-1]
         else:
             raise MICError('MACPayload', mic, cmic)
         
@@ -1052,6 +1059,7 @@ class Mote:
         self.fcntup += 1
         if ack:
             self.acked_downlink += 1
+            
         self.save()
         logger.info(
             ('Uplink application data -\n'

@@ -1,7 +1,7 @@
 import argparse
 
 def define_parser():
-    message_lst = ['join', 'app', 'pull']
+    message_lst = ['join', 'app', 'pull', 'fuzz']
     parser = argparse.ArgumentParser(
         description=f'{message_lst}'
     )
@@ -46,6 +46,23 @@ def define_parser():
         "msg", help="Message to be sent, 'str' required, default empty string.", default=""
     )
     pull_parser = sub_parsers.add_parser("pull", help="Send PULL_DATA.")
+
+    fuzz_parser = sub_parsers.add_parser("fuzz", help="Send Fuzzed_PULL_DATA")
+    fuzz_parser.add_argument(
+        "msg", help="Message to be fuzzed, 'str' required, default empty string.", default=""
+    )
+    fuzz_parser.add_argument(
+        '-p', '--fport', help=('Specify the FPort of uplink message.'), dest='fport', type=check_fport
+    )
+    fuzz_parser.add_argument(
+        '-f', help='FOpts field.', dest='fopts'
+    )
+    fuzz_parser.add_argument(
+        '-u', '--unconfirmed', help='unconfirmed data.', dest='unconfirmed', action='store_true'
+    )
+    fuzz_parser.add_argument(
+        '-a', '--ack', help=('ack of downlink message.'), dest='ack', action='store_true'
+    )
 
 
     return parser

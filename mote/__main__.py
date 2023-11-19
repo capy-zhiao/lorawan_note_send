@@ -1,16 +1,19 @@
+import csv
+
 import json
 import logging
 import socket
 import random
 import shutil
 import pathlib
+import time
 
 from .log import logger
 from . import mac, network
 from .cli import define_parser
 from .config import Config, load_config, parse_config
 from .exceptions import *
-
+from .fuzzer import *
 
 def init_gateway(args):
     base_config_dir = pathlib.Path(args.config)
@@ -56,6 +59,7 @@ def main():
     logger = logging.getLogger('main')
     try:
         args = define_parser().parse_args()
+        print(args)
         gateway, udp_client = init_gateway(args)
         if args.command == 'pull':
             gateway.pull(udp_client)
@@ -68,7 +72,51 @@ def main():
                 fport = getattr(args, "fport", None)
                 fport = fport if fport is not None else random.randint(1, 223)
                 msg = args.msg.encode()
+                print(msg)
                 phypld = mote.form_phypld(fport, msg, fopts, unconfirmed=args.unconfirmed, ack=args.ack)
+
+            elif args.command == 'fuzz':
+                test_results = []
+                msg_list = get_string_list(args.msg)
+                i = 1
+
+                for msg in msg_list:
+                    result = {
+                        "Data": msg,
+                        "ACK": False, 
+                        "RESP": False,
+                        "MACPayload": "", 
+                        "DevAddr": "" 
+                    }
+
+                    fopts = bytes.fromhex(args.fopts) if args.fopts else b''
+                    fport = getattr(args, "fport", None)
+                    fport = fport if fport is not None else random.randint(1, 223)
+                    msg = msg.encode()
+
+                    print(f"# ------round : {i} ------#")
+                    print(f"# ------test_DATA : {msg} ------#")
+                    i = i+1
+                    
+                    gateway.pull(udp_client)
+                    time.sleep(1)
+
+                    phypld = mote.form_phypld(fport, msg, fopts, unconfirmed=args.unconfirmed, ack=args.ack)
+
+                    gateway.push(udp_client, phypld, mote, result)
+                    time.sleep(1)
+                    print(result)
+                    test_results.append(result)
+
+                filename = "Fuzzed_results.csv"
+
+                with open(filename, 'w', newline='') as file:
+                    writer = csv.DictWriter(file, fieldnames=["Data", "ACK", "RESP", "MACPayload", "DevAddr"])
+                    writer.writeheader()
+                    for result in test_results:
+                        writer.writerow(result)
+                
+                exit(0)
             gateway.push(udp_client, phypld, mote)
     except socket.timeout as e:
         logger.error('Socket Timeout')
