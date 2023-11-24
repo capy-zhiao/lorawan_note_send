@@ -18,10 +18,6 @@ def get_float():
 #     return repr(''.join(random.choices(string.ascii_letters + string.digits + string.punctuation, k=length)))
 
 def get_string(base_string):
-    """
-    Generate a string by randomly mutating the given base string.
-    The length of the mutated string will be the same as the base string.
-    """
     mutated_string = list(base_string)
     for i in range(len(mutated_string)):
         if random.random() < 0.5:  
