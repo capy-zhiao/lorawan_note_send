@@ -12,6 +12,7 @@ lorawan_note_send
       * [3. Send_data](#3-send_data)
       * [4. Results](#4-results)
       * [5. Fuzzingtest](#5-fuzzingtest)
+      * [6. Tests](#6-tests)
 
 
 
@@ -103,3 +104,9 @@ python main.py fuzz testdata
 ![8](images/8.png)
 
 Results: Fuzzed_results.csv
+
+Note: Fuzzed_results.csv was recorded before two labelling bugs were fixed. Its "confirmed downlink" entries were unconfirmed downlinks, and DevAddr 10ac7a59 is 01caa795 (the hex digits were reversed instead of the bytes).
+
+### 6. Tests
+
+python -m unittest discover tests

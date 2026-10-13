@@ -1004,11 +1004,10 @@ class Mote:
                     direction=1,
                     fcnt=fcntdown # This arg must be provided
                 )
-            if confirmed:
-                prefix = 'un'
-            else:
-                prefix = ''
+            prefix = '' if confirmed else 'un'
             message_type = prefix + "confirmed downlink"
+            # DevAddr is little-endian on the air; reverse the bytes, not the hex digits.
+            devaddr = fhdr_d.get("devaddr")[::-1].hex()
             logger.info(
                 ('Downlink MACPayload (MIC verified), Important Info:\n'
                     '\tMessage Type: {}\n'
@@ -1016,12 +1015,12 @@ class Mote:
                     '\tFPort: {}, \n'
                     '\tPayload: {}.').format(
                         message_type,
-                        fhdr_d.get("devaddr").hex()[::-1],
+                        devaddr,
                         fport,
                         frmpld,
                     ))
             result['MACPayload'] = message_type
-            result['DevAddr'] = fhdr_d.get("devaddr").hex()[::-1]
+            result['DevAddr'] = devaddr
         else:
             raise MICError('MACPayload', mic, cmic)
         
